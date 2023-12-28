@@ -1,7 +1,9 @@
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_render.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "inc/direction.h"
 #include "inc/nake.h"
@@ -10,6 +12,8 @@
 
 struct nake* nake_newNake(int _x, int _y)
 {
+  srand(time(NULL));
+
   struct nake* nake = malloc(sizeof(struct nake));
 
   if (nake == NULL)
@@ -25,7 +29,7 @@ struct nake* nake_newNake(int _x, int _y)
   return nake;
 }
 
-void nake_update(struct nake* nake, enum direction key_pressed, int _ww, int _wh)
+void nake_update(struct nake* nake, struct apple* apple, enum direction key_pressed, int _ww, int _wh)
 {
   switch (key_pressed)
   {
@@ -75,6 +79,11 @@ void nake_update(struct nake* nake, enum direction key_pressed, int _ww, int _wh
     case RIGHT:
     nake->position.x += NAKE_SPEED;
     break;
+  }
+
+  if (nake->position.x == apple->position.x && nake->position.y == apple->position.y)
+  {
+    apple->is_eaten = true;
   }
 
   nake->position.x = (nake->position.x + _ww) % _ww;

@@ -11,11 +11,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "inc/apple.h"
 #include "inc/direction.h"
 #include "inc/nake.h"
 #include "inc/window.h"
 
-static const float fps_cap = 60;
+static const float fps_cap = 30;
 static const float frame_delay = 1000 / fps_cap;
 
 static Uint64 time_frameStart = 0;
@@ -62,7 +63,8 @@ static void window_handleEvents(struct window* window)
 
 static void window_update(struct window* window)
 {
-  nake_update(window->player, window->key_pressed, window->width, window->height);
+  nake_update(window->player, window->apple, window->key_pressed, window->width, window->height);
+  apple_update(window->apple, window->width, window->height);
 }
 
 static void window_render(struct window* window)
@@ -70,6 +72,7 @@ static void window_render(struct window* window)
   SDL_SetRenderDrawColor(window->renderer, 29, 29, 29, SDL_ALPHA_OPAQUE);
   SDL_RenderClear(window->renderer);
 
+  apple_render(window->apple, window->renderer);
   nake_render(window->player, window->renderer);
 
   SDL_RenderPresent(window->renderer);
@@ -127,6 +130,18 @@ struct window* window_init(char* title, int _w, int _h)
     return NULL;
   }
 
+  window->apple = apple_newApple(_w, _h);
+  if (window->apple == NULL)
+  {
+    printf("[!] %s:%d apple init failed\n", __FILE__, __LINE__);
+    nake_freeNake(window->player);
+    SDL_DestroyRenderer(window->renderer);
+    SDL_DestroyWindow(window->window);
+    free(window);
+    SDL_Quit();
+    return NULL;
+  }
+
   window->running = false;
 
   return window;
@@ -154,6 +169,7 @@ void window_exist(struct window* window)
 void window_close(struct window* window)
 {
   nake_freeNake(window->player);
+  apple_freeApple(window->apple);
   SDL_DestroyRenderer(window->renderer);
   SDL_DestroyWindow(window->window);
 
