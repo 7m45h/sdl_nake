@@ -13,6 +13,6 @@ struct nake
 };
 
 struct nake* nake_newNake(int _x, int _y);
-void nake_update(struct nake* nake, enum direction key_pressed);
+void nake_update(struct nake* nake, enum direction key_pressed, int _ww, int _wh);
 void nake_render(struct nake* nake, SDL_Renderer* renderer);
 void nake_freeNake(struct nake* nake);

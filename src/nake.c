@@ -6,7 +6,7 @@
 #include "inc/direction.h"
 #include "inc/nake.h"
 
-#define NAKE_SPEED 2
+#define NAKE_SPEED 1
 
 struct nake* nake_newNake(int _x, int _y)
 {
@@ -25,7 +25,7 @@ struct nake* nake_newNake(int _x, int _y)
   return nake;
 }
 
-void nake_update(struct nake* nake, enum direction key_pressed)
+void nake_update(struct nake* nake, enum direction key_pressed, int _ww, int _wh)
 {
   switch (key_pressed)
   {
@@ -76,6 +76,9 @@ void nake_update(struct nake* nake, enum direction key_pressed)
     nake->position.x += NAKE_SPEED;
     break;
   }
+
+  nake->position.x = (nake->position.x + _ww) % _ww;
+  nake->position.y = (nake->position.y + _wh) % _wh;
 }
 
 void nake_render(struct nake* nake, SDL_Renderer* renderer)

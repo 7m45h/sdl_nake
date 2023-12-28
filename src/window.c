@@ -15,12 +15,12 @@
 #include "inc/nake.h"
 #include "inc/window.h"
 
-static const int fps_cap = 1;
-static const int frame_delay = 1000 / fps_cap;
+static const float fps_cap = 60;
+static const float frame_delay = 1000 / fps_cap;
 
-static Uint32 time_frameStart = 0;
-static Uint32 time_frameEnd   = 0;
-static Uint32 time_frameTime  = 0;
+static Uint64 time_frameStart = 0;
+static Uint64 time_frameEnd   = 0;
+static Uint64 time_frameTime  = 0;
 
 static void window_handleEvents(struct window* window)
 {
@@ -62,7 +62,7 @@ static void window_handleEvents(struct window* window)
 
 static void window_update(struct window* window)
 {
-  nake_update(window->player, window->key_pressed);
+  nake_update(window->player, window->key_pressed, window->width, window->height);
 }
 
 static void window_render(struct window* window)
@@ -138,19 +138,16 @@ void window_exist(struct window* window)
 
   while (window->running)
   {
-    time_frameStart = SDL_GetTicks();
+    time_frameStart = SDL_GetPerformanceCounter();
 
     window_handleEvents(window);
     window_update(window);
     window_render(window);
 
-    time_frameEnd = SDL_GetTicks();
-    time_frameTime = time_frameStart - time_frameEnd;
+    time_frameEnd = SDL_GetPerformanceCounter();
+    time_frameTime = (time_frameEnd - time_frameStart) / (SDL_GetPerformanceFrequency() * 1000);
 
-    if (time_frameTime < frame_delay)
-    {
-      SDL_Delay(frame_delay - time_frameTime);
-    }
+    SDL_Delay(frame_delay - time_frameTime);
   }
 }
 
