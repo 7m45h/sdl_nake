@@ -6,6 +6,9 @@
 #include <SDL2/SDL_video.h>
 #include <stdbool.h>
 
+#include "direction.h"
+#include "nake.h"
+
 struct window
 {
   int width;
@@ -13,6 +16,8 @@ struct window
   SDL_Window* window;
   SDL_Renderer* renderer;
   SDL_Event event;
+  enum direction key_pressed;
+  struct nake* player;
   bool running;
 };
 

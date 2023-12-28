@@ -7,7 +7,7 @@ int main(void)
   struct window* window = window_init("sdl_nake", 640, 360);
   if (window == NULL)
   {
-    printf("[!] %s:%d window init failed", __FILE__, __LINE__);
+    printf("[!] %s:%d window init failed\n", __FILE__, __LINE__);
     return 1;
   }
 
