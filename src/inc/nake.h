@@ -6,11 +6,13 @@
 
 #include "apple.h"
 #include "direction.h"
+#include "tail.h"
 
 struct nake
 {
   SDL_Point position;
   enum direction direction;
+  struct tail* tail;
 };
 
 struct nake* nake_newNake(int _x, int _y);
