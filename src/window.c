@@ -57,6 +57,16 @@ static void window_handleEvents(struct window* window)
         break;
       }
       break;
+
+      case SDL_WINDOWEVENT:
+      switch (window->event.window.event)
+      {
+        case SDL_WINDOWEVENT_SIZE_CHANGED:
+        window->width = window->event.window.data1;
+        window->height = window->event.window.data2;
+        break;
+      }
+      break;
     }
   }
 }
@@ -98,7 +108,7 @@ struct window* window_init(char* title, int _w, int _h)
   window->width = _w;
   window->height = _h;
 
-  window->window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _w, _h, 0);
+  window->window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _w, _h, SDL_WINDOW_RESIZABLE);
   if (window->window == NULL)
   {
     printf("[!] %s:%d %s\n", __FILE__, __LINE__, SDL_GetError());
@@ -107,7 +117,7 @@ struct window* window_init(char* title, int _w, int _h)
     return NULL;
   }
 
-  window->renderer = SDL_CreateRenderer(window->window, -1, 0);
+  window->renderer = SDL_CreateRenderer(window->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   if (window->renderer == NULL)
   {
     printf("[!] %s:%d %s\n", __FILE__, __LINE__, SDL_GetError());
