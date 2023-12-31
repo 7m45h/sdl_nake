@@ -14,6 +14,7 @@
 #include "inc/apple.h"
 #include "inc/direction.h"
 #include "inc/nake.h"
+#include "inc/sl_manager.h"
 #include "inc/window.h"
 
 static const float fps_cap = 30;
@@ -36,10 +37,6 @@ static void window_handleEvents(struct window* window)
       case SDL_KEYDOWN:
       switch (window->event.key.keysym.sym)
       {
-        case SDLK_q:
-        window->running = false;
-        break;
-
         case SDLK_UP:
         window->key_pressed = UP;
         break;
@@ -55,6 +52,18 @@ static void window_handleEvents(struct window* window)
         case SDLK_RIGHT:
         window->key_pressed = RIGHT;
         break;
+
+        case SDLK_q:
+        window->running = false;
+        break;
+
+        case SDLK_s:
+        slm_save(&window->dim, window->apple, window->player);
+        break;
+
+        case SDLK_l:
+        slm_load(&window->dim, window->apple, window->player);
+        break;
       }
       break;
 
@@ -62,8 +71,8 @@ static void window_handleEvents(struct window* window)
       switch (window->event.window.event)
       {
         case SDL_WINDOWEVENT_SIZE_CHANGED:
-        window->width = window->event.window.data1;
-        window->height = window->event.window.data2;
+        window->dim.x = window->event.window.data1;
+        window->dim.y = window->event.window.data2;
         break;
       }
       break;
@@ -73,8 +82,8 @@ static void window_handleEvents(struct window* window)
 
 static void window_update(struct window* window)
 {
-  nake_update(window->player, window->apple, window->key_pressed, window->width, window->height);
-  apple_update(window->apple, window->width, window->height);
+  nake_update(window->player, window->apple, window->key_pressed, &window->dim);
+  apple_update(window->apple, &window->dim);
 }
 
 static void window_render(struct window* window)
@@ -105,8 +114,8 @@ struct window* window_init(char* title, int _w, int _h)
     return NULL;
   }
 
-  window->width = _w;
-  window->height = _h;
+  window->dim.x = _w;
+  window->dim.y = _h;
 
   window->window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _w, _h, SDL_WINDOW_RESIZABLE);
   if (window->window == NULL)
@@ -140,7 +149,7 @@ struct window* window_init(char* title, int _w, int _h)
     return NULL;
   }
 
-  window->apple = apple_newApple(_w, _h);
+  window->apple = apple_newApple(&window->dim);
   if (window->apple == NULL)
   {
     printf("[!] %s:%d apple init failed\n", __FILE__, __LINE__);

@@ -31,7 +31,7 @@ struct nake* nake_newNake(int _x, int _y)
   return nake;
 }
 
-void nake_update(struct nake* nake, struct apple* apple, enum direction key_pressed, int _ww, int _wh)
+void nake_update(struct nake* nake, struct apple* apple, enum direction key_pressed, SDL_Point* window_dim)
 {
   switch (key_pressed)
   {
@@ -91,8 +91,8 @@ void nake_update(struct nake* nake, struct apple* apple, enum direction key_pres
     nake->tail = tail_appendTail(nake->tail, nake->position.x, nake->position.y);
   }
 
-  nake->position.x = (nake->position.x + _ww) % _ww;
-  nake->position.y = (nake->position.y + _wh) % _wh;
+  nake->position.x = (nake->position.x + window_dim->x) % window_dim->x;
+  nake->position.y = (nake->position.y + window_dim->y) % window_dim->y;
 }
 
 void nake_render(struct nake* nake, SDL_Renderer* renderer)

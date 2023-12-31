@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -7,7 +8,7 @@
 
 #include "inc/apple.h"
 
-struct apple* apple_newApple(int _ww, int _wh)
+struct apple* apple_newApple(SDL_Point* window_dim)
 {
   struct apple* apple = malloc(sizeof(struct apple));
   if (apple == NULL)
@@ -16,19 +17,19 @@ struct apple* apple_newApple(int _ww, int _wh)
     return NULL;
   }
 
-  apple->position.x = rand() % _ww;
-  apple->position.y = rand() % _wh;
+  apple->position.x = rand() % window_dim->x;
+  apple->position.y = rand() % window_dim->y;
   apple->is_eaten = false;
 
   return apple;
 }
 
-void apple_update(struct apple* apple, int _ww, int _wh)
+void apple_update(struct apple* apple, SDL_Point* window_dim)
 {
   if (apple->is_eaten)
   {
-    apple->position.x = rand() % _ww;
-    apple->position.y = rand() % _wh;
+    apple->position.x = rand() % window_dim->x;
+    apple->position.y = rand() % window_dim->y;
     apple->is_eaten = false;
   }
 }

@@ -11,7 +11,7 @@ struct apple
   bool is_eaten;
 };
 
-struct apple* apple_newApple(int _ww, int _wh);
-void apple_update(struct apple* apple, int _ww, int _wh);
+struct apple* apple_newApple(SDL_Point* window_dim);
+void apple_update(struct apple* apple, SDL_Point* window_dim);
 void apple_render(struct apple* apple, SDL_Renderer* renderer);
 void apple_freeApple(struct apple* apple);
