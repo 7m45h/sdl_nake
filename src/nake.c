@@ -5,7 +5,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "inc/direction.h"
 #include "inc/nake.h"
@@ -15,8 +14,6 @@
 
 struct nake* nake_newNake(int _x, int _y)
 {
-  srand(time(NULL));
-
   struct nake* nake = malloc(sizeof(struct nake));
 
   if (nake == NULL)

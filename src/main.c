@@ -1,9 +1,13 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "inc/window.h"
 
 int main(void)
 {
+  srand(time(NULL));
+
   struct window* window = window_init("sdl_nake", 640, 360);
   if (window == NULL)
   {
