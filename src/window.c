@@ -14,7 +14,6 @@
 #include "inc/apple.h"
 #include "inc/direction.h"
 #include "inc/nake.h"
-#include "inc/sl_manager.h"
 #include "inc/window.h"
 
 static const float fps_cap = 30;
@@ -55,14 +54,6 @@ static void window_handleEvents(struct window* window)
 
         case SDLK_q:
         window->running = false;
-        break;
-
-        case SDLK_s:
-        slm_save(&window->dim, window->apple, window->player);
-        break;
-
-        case SDLK_l:
-        slm_load(&window->dim, window->apple, window->player);
         break;
       }
       break;
