@@ -64,6 +64,7 @@ static void window_handleEvents(struct window* window)
         case SDL_WINDOWEVENT_SIZE_CHANGED:
         window->dim.x = window->event.window.data1;
         window->dim.y = window->event.window.data2;
+        apple_relocate(window->apple, &window->dim);
         break;
       }
       break;
@@ -74,7 +75,6 @@ static void window_handleEvents(struct window* window)
 static void window_update(struct window* window)
 {
   nake_update(window->player, window->apple, window->key_pressed, &window->dim);
-  apple_update(window->apple, &window->dim);
 }
 
 static void window_render(struct window* window)

@@ -2,10 +2,10 @@
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "inc/apple.h"
 #include "inc/direction.h"
 #include "inc/nake.h"
 #include "inc/tail.h"
@@ -86,7 +86,7 @@ void nake_update(struct nake* nake, struct apple* apple, enum direction key_pres
 
   if (nake->position.x == apple->position.x && nake->position.y == apple->position.y)
   {
-    apple->is_eaten = true;
+    apple_respawn(apple, window_dim);
     nake->tail = tail_appendTail(nake->tail, nake->position.x, nake->position.y);
   }
 
