@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_error.h>
 #include <SDL2/SDL_events.h>
+#include <SDL2/SDL_image.h>
 #include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL_pixels.h>
 #include <SDL2/SDL_render.h>
@@ -14,9 +15,10 @@
 #include "inc/apple.h"
 #include "inc/direction.h"
 #include "inc/nake.h"
+#include "inc/tail.h"
 #include "inc/window.h"
 
-static const float fps_cap = 30;
+static const float fps_cap = 10;
 static const float frame_delay = 1000 / fps_cap;
 
 static Uint64 time_frameStart = 0;
@@ -97,10 +99,19 @@ struct window* window_init(char* title, int _w, int _h)
     return NULL;
   }
 
+  int img_status = IMG_Init(IMG_INIT_PNG);
+  if (img_status == 0)
+  {
+    printf("[!] %s:%d %s\n", __FILE__, __LINE__, IMG_GetError());
+    SDL_Quit();
+    return NULL;
+  }
+
   struct window* window = malloc(sizeof(struct window));
   if (window == NULL)
   {
     printf("[!] %s:%d window malloc failed\n", __FILE__, __LINE__);
+    IMG_Quit();
     SDL_Quit();
     return NULL;
   }
@@ -113,6 +124,7 @@ struct window* window_init(char* title, int _w, int _h)
   {
     printf("[!] %s:%d %s\n", __FILE__, __LINE__, SDL_GetError());
     free(window);
+    IMG_Quit();
     SDL_Quit();
     return NULL;
   }
@@ -123,24 +135,39 @@ struct window* window_init(char* title, int _w, int _h)
     printf("[!] %s:%d %s\n", __FILE__, __LINE__, SDL_GetError());
     SDL_DestroyWindow(window->window);
     free(window);
+    IMG_Quit();
     SDL_Quit();
     return NULL;
   }
 
   window->key_pressed = LEFT;
 
-  window->player = nake_newNake(_w/2, _h/2);
+  window->player = nake_newNake(window->renderer, _w/2, _h/2);
   if (window->player == NULL)
   {
     printf("[!] %s:%d player init failed\n", __FILE__, __LINE__);
     SDL_DestroyRenderer(window->renderer);
     SDL_DestroyWindow(window->window);
     free(window);
+    IMG_Quit();
     SDL_Quit();
     return NULL;
   }
 
-  window->apple = apple_newApple(&window->dim);
+  int tail_status = tail_init(window->renderer);
+  if (tail_status == 1)
+  {
+    printf("[!] %s:%d tail init failed\n", __FILE__, __LINE__);
+    nake_freeNake(window->player);
+    SDL_DestroyRenderer(window->renderer);
+    SDL_DestroyWindow(window->window);
+    free(window);
+    IMG_Quit();
+    SDL_Quit();
+    return NULL;
+  }
+
+  window->apple = apple_newApple(window->renderer, &window->dim);
   if (window->apple == NULL)
   {
     printf("[!] %s:%d apple init failed\n", __FILE__, __LINE__);
@@ -148,6 +175,7 @@ struct window* window_init(char* title, int _w, int _h)
     SDL_DestroyRenderer(window->renderer);
     SDL_DestroyWindow(window->window);
     free(window);
+    IMG_Quit();
     SDL_Quit();
     return NULL;
   }
@@ -179,11 +207,13 @@ void window_exist(struct window* window)
 void window_close(struct window* window)
 {
   nake_freeNake(window->player);
+  tail_deInit();
   apple_freeApple(window->apple);
   SDL_DestroyRenderer(window->renderer);
   SDL_DestroyWindow(window->window);
 
   free(window);
 
+  IMG_Quit();
   SDL_Quit();
 }
