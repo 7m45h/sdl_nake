@@ -18,11 +18,10 @@
 #include "inc/tail.h"
 #include "inc/window.h"
 
-static const float fps_cap = 10;
-static const float frame_delay = 1000 / fps_cap;
+static const int fps = 10;
+static const int desired_frameTime = 1000 / fps;
 
 static Uint64 time_frameStart = 0;
-static Uint64 time_frameEnd   = 0;
 static Uint64 time_frameTime  = 0;
 
 static void window_handleEvents(struct window* window)
@@ -142,7 +141,7 @@ struct window* window_init(char* title, int _w, int _h)
 
   window->key_pressed = LEFT;
 
-  window->player = nake_newNake(window->renderer, _w/2, _h/2);
+  window->player = nake_newNake(window->renderer, _w * 0.5, _h * 0.5);
   if (window->player == NULL)
   {
     printf("[!] %s:%d player init failed\n", __FILE__, __LINE__);
@@ -191,16 +190,17 @@ void window_exist(struct window* window)
 
   while (window->running)
   {
-    time_frameStart = SDL_GetPerformanceCounter();
+    time_frameStart = SDL_GetTicks64();
 
     window_handleEvents(window);
     window_update(window);
     window_render(window);
 
-    time_frameEnd = SDL_GetPerformanceCounter();
-    time_frameTime = (time_frameEnd - time_frameStart) / (SDL_GetPerformanceFrequency() * 1000);
-
-    SDL_Delay(frame_delay - time_frameTime);
+    time_frameTime = SDL_GetTicks64() - time_frameStart;
+    if (time_frameTime < desired_frameTime)
+    {
+      SDL_Delay(desired_frameTime - time_frameTime);
+    }
   }
 }
 
